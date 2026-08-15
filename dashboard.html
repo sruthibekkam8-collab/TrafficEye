@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TrafficEye Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.05); }
+    </style>
+</head>
+<body class="bg-slate-950 text-white min-h-screen">
+    <nav class="p-6 border-b border-slate-800 flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-blue-500">TrafficEye</h1>
+        <p class="font-mono text-slate-400">ID: TE-882910</p>
+    </nav>
+
+    <main class="max-w-6xl mx-auto p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="md:col-span-2 glass p-8 rounded-3xl">
+            <h2 class="text-xl font-bold mb-4">Capture Evidence</h2>
+            <div id="dropZone" class="aspect-video bg-slate-900 border-2 border-dashed border-slate-700 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:border-blue-500 transition-all">
+                <p id="fileLabel">Click to Upload Evidence</p>
+                <input type="file" id="fileInput" class="hidden" accept="image/*">
+            </div>
+            <div class="mt-6 flex gap-4">
+                <select id="vType" class="flex-1 bg-slate-800 p-4 rounded-xl outline-none border border-slate-700">
+                    <option>No Helmet</option>
+                    <option>Triple Riding</option>
+                    <option>Wrong Way Driving</option>
+                </select>
+                <button onclick="submitReport()" class="bg-blue-600 px-8 py-4 rounded-xl font-bold hover:bg-blue-500">Submit</button>
+            </div>
+        </div>
+
+        <div class="bg-blue-600 p-8 rounded-3xl h-fit">
+            <p class="text-blue-100 text-sm font-bold uppercase">Balance</p>
+            <h3 class="text-5xl font-black my-2">₹<span id="balance">0.00</span></h3>
+            
+            <div class="mt-6 pt-6 border-t border-blue-400">
+                <p class="text-xs font-bold text-blue-100 mb-2 uppercase">Withdraw via UPI</p>
+                <input type="text" id="upi-id-input" placeholder="Enter UPI ID (e.g. name@okaxis)" 
+                       class="w-full p-3 rounded-xl text-black outline-none mb-3 text-sm">
+                <button onclick="handleWithdrawal()" class="w-full bg-white text-blue-600 py-3 rounded-xl font-bold hover:bg-blue-50 transition-colors">
+                    Confirm Withdrawal
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const CID = 'TE-882910';
+        const fileInput = document.getElementById('fileInput');
+        
+        document.getElementById('dropZone').onclick = () => fileInput.click();
+        
+        fileInput.onchange = () => {
+            if(fileInput.files[0]) document.getElementById('fileLabel').innerText = "Ready: " + fileInput.files[0].name;
+        };
+
+        // Submit Violation
+        async function submitReport() {
+            if(!fileInput.files[0]) return alert("Select an image first!");
+            const fd = new FormData();
+            fd.append('evidence', fileInput.files[0]);
+            fd.append('violationType', document.getElementById('vType').value);
+            fd.append('citizenId', CID);
+
+            const res = await fetch('/api/report', { method: 'POST', body: fd });
+            if(res.ok) { 
+                alert("Report Verified! Reward Added."); 
+                updateUI(); 
+                fileInput.value = ""; // Clear file
+                document.getElementById('fileLabel').innerText = "Click to Upload Evidence";
+            }
+        }
+
+        // Update Balance
+        async function updateUI() {
+            const res = await fetch(`/api/stats/${CID}`);
+            const data = await res.json();
+            document.getElementById('balance').innerText = data.incentive;
+        }
+
+        // Handle UPI Withdrawal
+        async function handleWithdrawal() {
+            const upiId = document.getElementById('upi-id-input').value;
+            const currentBalance = parseFloat(document.getElementById('balance').innerText);
+
+            if (currentBalance <= 0) {
+                alert("You have no rewards to withdraw!");
+                return;
+            }
+
+            if (!upiId.includes('@')) {
+                alert("Please enter a valid UPI ID (e.g., username@bank)");
+                return;
+            }
+
+            const response = await fetch('/api/withdraw', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    citizenId: CID,
+                    upiId: upiId,
+                    amount: currentBalance
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                alert(`Success! Request for ₹${currentBalance} sent to ${upiId}`);
+                document.getElementById('upi-id-input').value = ""; // Clear input
+                // Note: Balance stays the same until Admin verifies/pays.
+            } else {
+                alert("Error: " + data.message);
+            }
+        }
+
+        // Initial load
+        updateUI();
+    </script>
+</body>
+</html>

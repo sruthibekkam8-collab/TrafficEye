@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrafficEye | Citizen Login</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+        body {
+            background:
+                linear-gradient(
+                    rgba(15, 23, 42, 0.88),
+                    rgba(15, 23, 42, 0.88)
+                ),
+                url("https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&q=80&w=1920");
+
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex items-center justify-center p-6">
+
+    <div class="glass-card w-full max-w-md rounded-3xl shadow-2xl p-8 md:p-10">
+
+        <!-- Logo -->
+        <div class="text-center mb-10">
+
+            <h1 class="text-4xl font-black text-white tracking-tight">
+                Traffic<span class="text-blue-500">Eye</span>
+            </h1>
+
+            <p class="text-slate-400 mt-3">
+                Secure Roadways Portal
+            </p>
+
+            <p class="text-slate-500 text-sm mt-2">
+                Sign in to report traffic violations
+            </p>
+
+        </div>
+
+
+        <!-- Login Form -->
+        <form id="loginForm" class="space-y-6">
+
+            <!-- Email -->
+            <div>
+
+                <label class="block text-slate-300 font-medium mb-2">
+                    Official ID / Email
+                </label>
+
+                <input
+                    id="email"
+                    type="email"
+                    placeholder="name@example.com"
+                    required
+                    class="w-full bg-slate-800/70 border border-slate-700 text-white px-5 py-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition"
+                >
+
+            </div>
+
+
+            <!-- Password -->
+            <div>
+
+                <label class="block text-slate-300 font-medium mb-2">
+                    Password
+                </label>
+
+                <input
+                    id="password"
+                    type="password"
+                    placeholder="Enter your password"
+                    required
+                    class="w-full bg-slate-800/70 border border-slate-700 text-white px-5 py-3 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 transition"
+                >
+
+            </div>
+
+
+            <!-- Remember + Forgot -->
+            <div class="flex items-center justify-between text-sm">
+
+                <label class="flex items-center text-slate-400 cursor-pointer">
+
+                    <input
+                        type="checkbox"
+                        class="mr-2 accent-blue-500"
+                    >
+
+                    Remember me
+
+                </label>
+
+                <a
+                    href="#"
+                    onclick="forgotPassword(event)"
+                    class="text-blue-400 hover:text-blue-300 transition"
+                >
+                    Forgot password?
+                </a>
+
+            </div>
+
+
+            <!-- Login Button -->
+            <button
+                type="submit"
+                class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-900/30 transition-all"
+            >
+                Secure Login
+            </button>
+
+        </form>
+
+
+        <!-- Create Account -->
+        <div class="mt-8 text-center border-t border-slate-700/50 pt-8">
+
+            <p class="text-slate-400 text-sm">
+                New to the community?
+
+                <a
+                    href="#"
+                    onclick="createAccount(event)"
+                    class="text-blue-400 font-bold hover:underline"
+                >
+                    Create Account
+                </a>
+            </p>
+
+            <p class="text-slate-600 text-xs mt-5 uppercase tracking-widest">
+                Protected by 256-bit Encryption
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- JavaScript -->
+    <script>
+
+        document.getElementById("loginForm").addEventListener("submit", function(event) {
+
+            event.preventDefault();
+
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value.trim();
+
+            if (email === "" || password === "") {
+                alert("Please enter your Email and Password.");
+                return;
+            }
+
+            // Login successful → Dashboard
+            window.location.href = "dashboard.html";
+
+        });
+
+
+        function forgotPassword(event) {
+
+            event.preventDefault();
+
+            alert("Password recovery feature will be available soon.");
+
+        }
+
+
+        function createAccount(event) {
+
+            event.preventDefault();
+
+            alert("Account registration feature will be available soon.");
+
+        }
+
+    </script>
+
+</body>
+</html>
